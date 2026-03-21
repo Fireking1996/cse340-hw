@@ -1,3 +1,5 @@
+const getNav = require("./navigation").getNav
+
 function buildVehicleDetail(vehicle) {
 
   const price =
@@ -59,4 +61,10 @@ function handleErrors(fn) {
     Promise.resolve(fn(req, res, next))
       .catch(next)
   }
+}
+
+module.exports = {
+  buildVehicleDetail,
+  getNav,
+  handleErrors,
 }

@@ -38,6 +38,7 @@ async function buildVehicleDetail(req, res, next) {
 
 module.exports = {
   buildVehicleDetail,
+  triggerError,
 }
 
 async function triggerError(
