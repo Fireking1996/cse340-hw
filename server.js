@@ -40,3 +40,22 @@ const host = process.env.HOST
 app.listen(port, () => {
   console.log(`app listening on ${host}:${port}`)
 })
+
+app.use(async (err, req, res, next) => {
+
+  console.error(err.stack)
+
+  const nav =
+    await utilities.getNav()
+
+  res.status(
+    err.status || 500
+  ).render(
+    "errors/error",
+    {
+      title: "Error",
+      message: err.message,
+      nav,
+    }
+  )
+})
