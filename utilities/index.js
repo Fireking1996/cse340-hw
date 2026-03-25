@@ -93,9 +93,8 @@ function handleErrors(fn) {
       .catch(next)
   }
 }
-
 module.exports = {
-  getNav,
+  buildByClassificationId,
   buildVehicleDetail,
-  handleErrors,
+  triggerError,
 }
