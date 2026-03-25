@@ -1,22 +1,13 @@
-async function getVehicleById(inv_id) {
-  try {
-    const sql =
-      `
-      SELECT *
-      FROM inventory
-      WHERE inv_id = $1
-      `
+async function getInventoryByClassificationId(
+  classification_id
+) {
+  const sql = `
+    SELECT *
+    FROM inventory
+    WHERE classification_id = $1
+  `
+  const data =
+    await pool.query(sql, [classification_id])
 
-    const data =
-      await pool.query(sql, [inv_id])
-
-    return data.rows[0]
-  }
-
-  catch (error) {
-    console.error(
-      "getVehicleById error",
-      error
-    )
-  }
+  return data.rows
 }

@@ -16,7 +16,8 @@ async function buildByClassificationId(req, res, next) {
       throw err
     }
 
-    const nav = await utilities.getNav()
+    const nav =
+      await utilities.getNav()
 
     res.render(
       "inventory/classification",
