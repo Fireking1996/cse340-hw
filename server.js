@@ -3,9 +3,7 @@
  * application. It is used to control the project.
  *******************************************/
 /* ***********************
- * Require Statements
- *************************/
-/* ******************************************
+ /* ******************************************
  * Primary server file
  *******************************************/
 
@@ -14,7 +12,8 @@
  *************************/
 const express = require("express")
 const expressLayouts = require("express-ejs-layouts")
-const env = require("dotenv").config()
+require("dotenv").config()
+
 const app = express()
 
 const static = require("./routes/static")
@@ -33,7 +32,7 @@ app.set("layout", "./layouts/layout")
  *************************/
 app.use(static)
 
-// IMPORTANT — this enables vehicle navigation
+// IMPORTANT: enables vehicle navigation
 app.use("/inv", inventoryRoute)
 
 // Index route
@@ -44,34 +43,38 @@ app.get("/", function(req, res) {
 })
 
 /* ***********************
- * Local Server Information
- *************************/
-const port = process.env.PORT
-const host = process.env.HOST
-
-/* ***********************
- * Start Server
- *************************/
-app.listen(port, () => {
-  console.log(`app listening on ${host}:${port}`)
-})
-
-/* ***********************
  * Error Handler
  *************************/
 app.use(async (err, req, res, next) => {
 
   console.error(err.stack)
 
-  const nav =
-    await utilities.getNav()
+  try {
+    const nav = await utilities.getNav()
 
-  res.status(err.status || 500).render(
-    "errors/error",
-    {
-      title: "Error",
-      message: err.message,
-      nav,
-    }
-  )
+    res.status(err.status || 500).render(
+      "errors/error",
+      {
+        title: "Error",
+        message: err.message,
+        nav,
+      }
+    )
+  } catch (error) {
+    res.status(500).send("Server Error")
+  }
+
+})
+
+/* ***********************
+ * Server Information
+ *************************/
+const port = process.env.PORT || 5500
+const host = process.env.HOST || "localhost"
+
+/* ***********************
+ * Start Server
+ *************************/
+app.listen(port, () => {
+  console.log(`App listening on ${host}:${port}`)
 })
