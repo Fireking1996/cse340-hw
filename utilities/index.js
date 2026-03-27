@@ -2,7 +2,7 @@
 const model = require("../models/inventory-model"); // or classification-model.js
 const invModel = require("../models/inventory-model")
 
-const Util = {}
+
 
 /* ***************************
  * Build Navigation
