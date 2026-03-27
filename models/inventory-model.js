@@ -1,55 +1,48 @@
+// models/inventory-model.js
+
 const pool = require("../database/")
 
 /* ***************************
- * Get all classifications
- *************************** */
+ *  Get all classifications
+ * ************************** */
 async function getClassifications() {
   try {
-    const sql =
-      "SELECT * FROM classification ORDER BY classification_name"
-    const data = await pool.query(sql)
+    const data = await pool.query(
+      "SELECT * FROM public.classification ORDER BY classification_name"
+    )
     return data.rows
   } catch (error) {
-    console.error("getClassifications error", error)
+    console.error("getClassifications error:", error)
   }
 }
 
 /* ***************************
- * Get inventory by classification ID
- *************************** */
+ *  Get inventory by classification_id
+ * ************************** */
 async function getInventoryByClassificationId(classification_id) {
   try {
-    const sql = `
-      SELECT *
-      FROM inventory
-      WHERE classification_id = $1
-    `
-    const data = await pool.query(sql, [classification_id])
+    const data = await pool.query(
+      `SELECT *
+       FROM public.inventory AS i
+       JOIN public.classification AS c
+       ON i.classification_id = c.classification_id
+       WHERE i.classification_id = $1`,
+      [classification_id]
+    )
+
     return data.rows
   } catch (error) {
-    console.error("getInventoryByClassificationId error", error)
+    console.error(
+      "getInventoryByClassificationId error:",
+      error
+    )
   }
 }
 
 /* ***************************
- * Get a single vehicle by inventory ID
- *************************** */
-async function getVehicleById(inv_id) {
-  try {
-    const sql = `
-      SELECT *
-      FROM inventory
-      WHERE inv_id = $1
-    `
-    const data = await pool.query(sql, [inv_id])
-    return data.rows[0]
-  } catch (error) {
-    console.error("getVehicleById error", error)
-  }
-}
-
+ * Export Functions
+ * ************************** */
 module.exports = {
   getClassifications,
   getInventoryByClassificationId,
-  getVehicleById,
 }

@@ -2,60 +2,53 @@
  * This server.js file is the primary file of the 
  * application. It is used to control the project.
  *******************************************/
-/* ***********************
- * Require Statements
- *************************/
+// server.js
+
+// *******************************
+// Required Resources
+// *******************************
 const express = require("express")
-const expressLayouts = require("express-ejs-layouts")
-const env = require("dotenv").config()
 const app = express()
-const static = require("./routes/static")
+const path = require("path")
+require("dotenv").config()
 
+// Controllers
+const baseController = require("./controllers/baseController")
 
-/* ***********************
- * View Engine and Templates
- *************************/
+// Routes
+const inventoryRoute = require("./routes/inventoryRoute")
+
+// *******************************
+// Express Settings
+// *******************************
 app.set("view engine", "ejs")
-app.use(expressLayouts)
-app.set("layout", "./layouts/layout") // not at views root
-/* ***********************
- * Routes
- *************************/
-app.use(static)
+app.set("views", path.join(__dirname, "views"))
 
-//Index route
-app.get("/", function(req, res){ res.render("index", {title: "Home"})
+// Static Files
+app.use(express.static(path.join(__dirname, "public")))
+
+// Parse POST Body
+app.use(express.urlencoded({ extended: true }))
+
+// *******************************
+// Routes
+// *******************************
+
+// Index route — Home page
+app.get("/", baseController.buildHome)
+
+// Inventory routes
+app.use("/inv", inventoryRoute)
+
+// 404 Page
+app.use((req, res) => {
+  res.status(404).render("errors/404", { title: "Page Not Found" })
 })
 
-/* ***********************
- * Local Server Information
- * Values from .env (environment) file
- *************************/
-const port = process.env.PORT
-const host = process.env.HOST
-
-/* ***********************
- * Log statement to confirm server operation
- *************************/
-app.listen(port, () => {
-  console.log(`app listening on ${host}:${port}`)
-})
-
-app.use(async (err, req, res, next) => {
-
-  console.error(err.stack)
-
-  const nav =
-    await utilities.getNav()
-
-  res.status(
-    err.status || 500
-  ).render(
-    "errors/error",
-    {
-      title: "Error",
-      message: err.message,
-      nav,
-    }
-  )
+// *******************************
+// Server
+// *******************************
+const PORT = process.env.PORT || 5500
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`)
 })

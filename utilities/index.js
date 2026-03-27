@@ -1,41 +1,102 @@
-const getNav = require("./navigation").getNav
+// utilities/index.js
+
+const invModel = require("../models/inventory-model")
+
+const Util = {}
 
 /* ***************************
- * Build vehicle detail HTML
- *************************** */
-function buildVehicleDetail(vehicle) {
-  const price = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(vehicle.inv_price)
+ * Build Navigation
+ * ************************** */
+Util.getNav = async function () {
+  let data = await invModel.getClassifications()
 
-  const mileage = vehicle.inv_miles.toLocaleString()
+  let list = "<ul>"
 
-  return `
-  <div class="vehicle-detail">
-    <img src="${vehicle.inv_image}" alt="${vehicle.inv_make} ${vehicle.inv_model}">
-    <div class="vehicle-info">
-      <h2>${vehicle.inv_year} ${vehicle.inv_make} ${vehicle.inv_model}</h2>
-      <p><strong>Price:</strong> ${price}</p>
-      <p><strong>Mileage:</strong> ${mileage} miles</p>
-      <p><strong>Color:</strong> ${vehicle.inv_color}</p>
-      <p>${vehicle.inv_description}</p>
-    </div>
-  </div>
-  `
+  list += '<li><a href="/" title="Home page">Home</a></li>'
+
+  data.forEach((row) => {
+    list +=
+      '<li>' +
+      '<a href="/inv/type/' +
+      row.classification_id +
+      '" title="See our inventory of ' +
+      row.classification_name +
+      ' vehicles">' +
+      row.classification_name +
+      "</a></li>"
+  })
+
+  list += "</ul>"
+
+  return list
 }
 
-/* ***************************
- * Error handler middleware
- *************************** */
-function handleErrors(fn) {
-  return function (req, res, next) {
-    Promise.resolve(fn(req, res, next)).catch(next)
+/* **************************************
+ * Build the classification view HTML
+ * ************************************ */
+Util.buildClassificationGrid = async function (data) {
+  let grid
+
+  if (data.length > 0) {
+    grid = '<ul id="inv-display">'
+
+    data.forEach((vehicle) => {
+      grid += "<li>"
+
+      grid +=
+        '<a href="../../inv/detail/' +
+        vehicle.inv_id +
+        '" title="View ' +
+        vehicle.inv_make +
+        " " +
+        vehicle.inv_model +
+        ' details">'
+
+      grid +=
+        '<img src="' +
+        vehicle.inv_thumbnail +
+        '" alt="Image of ' +
+        vehicle.inv_make +
+        " " +
+        vehicle.inv_model +
+        ' on CSE Motors" />'
+
+      grid += "</a>"
+
+      grid += '<div class="namePrice">'
+      grid += "<hr />"
+      grid += "<h2>"
+
+      grid +=
+        '<a href="../../inv/detail/' +
+        vehicle.inv_id +
+        '" title="View ' +
+        vehicle.inv_make +
+        " " +
+        vehicle.inv_model +
+        ' details">'
+
+      grid += vehicle.inv_make + " " + vehicle.inv_model
+
+      grid += "</a>"
+      grid += "</h2>"
+
+      grid +=
+        "<span>$" +
+        new Intl.NumberFormat("en-US").format(vehicle.inv_price) +
+        "</span>"
+
+      grid += "</div>"
+      grid += "</li>"
+    })
+
+    grid += "</ul>"
+  } else {
+    grid =
+      '<p class="notice">Sorry, no matching vehicles could be found.</p>'
   }
+
+  return grid
 }
 
-module.exports = {
-  buildVehicleDetail,
-  getNav,
-  handleErrors,
-}
+module.exports = Util

@@ -1,120 +1,50 @@
+// controllers/invController.js
+
 const invModel = require("../models/inventory-model")
-const utilities = require("../utilities")
+const utilities = require("../utilities/")
+
+const invCont = {}
 
 /* ***************************
  * Build inventory by classification view
- *************************** */
-async function buildByClassificationId(
-  req,
-  res,
-  next
-) {
+ * ************************** */
+invCont.buildByClassificationId = async function (req, res, next) {
   try {
-    const classification_id =
-      req.params.classification_id
+    // Get classification ID from URL
+    const classification_id = req.params.classificationId
 
+    // Get inventory data
     const data =
       await invModel.getInventoryByClassificationId(
         classification_id
       )
 
-    if (!data || data.length === 0) {
-      const err = new Error(
-        "No vehicles found for this classification"
-      )
-      err.status = 404
-      throw err
-    }
+    // Build vehicle grid
+    const grid =
+      await utilities.buildClassificationGrid(data)
 
-    const nav =
-      await utilities.getNav()
+    // Build navigation
+    let nav = await utilities.getNav()
 
-    res.render(
-      "inventory/classification",
-      {
-        title: "Vehicle List",
-        nav,
-        data,
-      }
+    // Get classification name
+    const className =
+      data.length > 0
+        ? data[0].classification_name
+        : "Vehicles"
+
+    // Render classification view
+    res.render("inventory/classification", {
+      title: className + " vehicles",
+      nav,
+      grid,
+    })
+  } catch (error) {
+    console.error(
+      "buildByClassificationId error:",
+      error
     )
-  }
-
-  catch (error) {
     next(error)
   }
 }
 
-/* ***************************
- * Build vehicle detail view
- *************************** */
-async function buildVehicleDetail(
-  req,
-  res,
-  next
-) {
-  try {
-    const inv_id =
-      req.params.inv_id
-
-    const vehicleData =
-      await invModel.getVehicleById(
-        inv_id
-      )
-
-    if (!vehicleData) {
-      const err =
-        new Error("Vehicle not found")
-      err.status = 404
-      throw err
-    }
-
-    const nav =
-      await utilities.getNav()
-
-    const detailHTML =
-      utilities.buildVehicleDetail(
-        vehicleData
-      )
-
-    res.render(
-      "inventory/detail",
-      {
-        title:
-          vehicleData.inv_make +
-          " " +
-          vehicleData.inv_model,
-        nav,
-        detailHTML,
-      }
-    )
-  }
-
-  catch (error) {
-    next(error)
-  }
-}
-
-/* ***************************
- * Intentional 500 error
- *************************** */
-async function triggerError(
-  req,
-  res,
-  next
-) {
-  try {
-    throw new Error(
-      "Intentional 500 error"
-    )
-  }
-
-  catch (error) {
-    next(error)
-  }
-}
-
-module.exports = {
-  buildByClassificationId,
-  buildVehicleDetail,
-  triggerError,
-}
+module.exports = invCont
