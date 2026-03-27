@@ -1,5 +1,5 @@
 // utilities/index.js
-
+const model = require("../models/inventory-model"); // or classification-model.js
 const invModel = require("../models/inventory-model")
 
 const Util = {}
@@ -7,8 +7,17 @@ const Util = {}
 /* ***************************
  * Build Navigation
  * ************************** */
-Util.getNav = async function() {
-  const data = await getClassifications();
+const Util = {}
+
+Util.getNav = async function () {
+  let data
+  try {
+    data = await model.getClassifications(); // make sure we call the model function
+  } catch (error) {
+    console.error("Error fetching classifications for nav: ", error);
+    data = [];
+  }
+
   let nav = "<ul>";
   if (Array.isArray(data) && data.length > 0) {
     data.forEach(classification => {
@@ -19,7 +28,8 @@ Util.getNav = async function() {
   }
   nav += "</ul>";
   return nav;
-};
+}
+
 
 /* **************************************
  * Build the classification view HTML

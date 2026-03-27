@@ -1,20 +1,25 @@
 // models/inventory-model.js
 
-const pool = require("../database/")
+const pool = require("../database/index") // your database connection
 
 /* ***************************
  *  Get all classifications
  * ************************** */
 async function getClassifications() {
   try {
-    const data = await pool.query(
-      "SELECT * FROM public.classification ORDER BY classification_name"
-    )
-    return data.rows
+    const data = await pool.query("SELECT * FROM public.classification");
+    return data.rows; // returns an array of classifications
   } catch (error) {
-    console.error("getClassifications error:", error)
+    console.error("getClassifications error: " + error);
+    return []; // fallback empty array so getNav won't crash
   }
 }
+
+module.exports = {
+  getClassifications,
+  // other exports like getInventoryByClassificationId
+};
+
 
 /* ***************************
  *  Get inventory by classification_id
