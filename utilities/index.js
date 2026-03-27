@@ -7,29 +7,19 @@ const Util = {}
 /* ***************************
  * Build Navigation
  * ************************** */
-Util.getNav = async function () {
-  let data = await invModel.getClassifications()
-
-  let list = "<ul>"
-
-  list += '<li><a href="/" title="Home page">Home</a></li>'
-
-  data.forEach((row) => {
-    list +=
-      '<li>' +
-      '<a href="/inv/type/' +
-      row.classification_id +
-      '" title="See our inventory of ' +
-      row.classification_name +
-      ' vehicles">' +
-      row.classification_name +
-      "</a></li>"
-  })
-
-  list += "</ul>"
-
-  return list
-}
+Util.getNav = async function() {
+  const data = await getClassifications();
+  let nav = "<ul>";
+  if (Array.isArray(data) && data.length > 0) {
+    data.forEach(classification => {
+      nav += `<li><a href="/inv/type/${classification.classification_id}">${classification.classification_name}</a></li>`;
+    });
+  } else {
+    nav += '<li><a href="/">Home</a></li>'; // fallback link
+  }
+  nav += "</ul>";
+  return nav;
+};
 
 /* **************************************
  * Build the classification view HTML
