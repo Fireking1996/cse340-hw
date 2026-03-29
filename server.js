@@ -11,12 +11,28 @@ const express = require("express")
 const app = express()
 const path = require("path")
 require("dotenv").config()
+const session = require("express-session")
+const pool = require('./database/')
 
 // Controllers
 const baseController = require("./controllers/baseController")
 
 // Routes
 const inventoryRoute = require("./routes/inventoryRoute")
+
+/* ***********************
+ * Middleware
+ * ************************/
+ app.use(session({
+  store: new (require('connect-pg-simple')(session))({
+    createTableIfMissing: true,
+    pool,
+  }),
+  secret: process.env.SESSION_SECRET,
+  resave: true,
+  saveUninitialized: true,
+  name: 'sessionId',
+}))
 
 // *******************************
 // Express Settings

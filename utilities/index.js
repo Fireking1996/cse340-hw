@@ -1,6 +1,5 @@
 // utilities/index.js
 const model = require("../models/inventory-model"); // or classification-model.js
-const invModel = require("../models/inventory-model")
 
 
 
@@ -11,23 +10,35 @@ const Util = {}
 
 Util.getNav = async function () {
   let data
+
   try {
-    data = await model.getClassifications(); // make sure we call the model function
+    data = await model.getClassifications()
   } catch (error) {
-    console.error("Error fetching classifications for nav: ", error);
-    data = [];
+    console.error("Error fetching classifications for nav: ", error)
+    data = []
   }
 
-  let nav = "<ul>";
+  let nav = "<nav>"
+  nav += "<ul>"
+
+  // REQUIRED: Home link first
+  nav += '<li><a href="/">Home</a></li>'
+
   if (Array.isArray(data) && data.length > 0) {
     data.forEach(classification => {
-      nav += `<li><a href="/inv/type/${classification.classification_id}">${classification.classification_name}</a></li>`;
-    });
-  } else {
-    nav += '<li><a href="/">Home</a></li>'; // fallback link
+      nav += `
+        <li>
+          <a href="/inv/type/${classification.classification_id}">
+            ${classification.classification_name}
+          </a>
+        </li>`
+    })
   }
-  nav += "</ul>";
-  return nav;
+
+  nav += "</ul>"
+  nav += "</nav>"
+
+  return nav
 }
 
 
