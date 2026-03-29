@@ -10,7 +10,7 @@ const baseController = {}
 baseController.buildHome = async function (req, res) {
   try {
     // Get navigation
-    let nav = await utilities.getNav()
+    const nav = await utilities.getNav()
 
     // Render home page
     res.render("index", {

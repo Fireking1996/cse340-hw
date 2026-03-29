@@ -24,7 +24,7 @@ invCont.buildByClassificationId = async function (req, res, next) {
       await utilities.buildClassificationGrid(data)
 
     // Build navigation
-    let nav = await utilities.getNav()
+    const nav = await utilities.getNav()
 
     // Get classification name
     const className =
