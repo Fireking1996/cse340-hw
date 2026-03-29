@@ -12,6 +12,8 @@ baseController.buildHome = async function (req, res) {
     // Get navigation
     const nav = await utilities.getNav()
 
+    
+
     // Render home page
     res.render("index", {
       title: "Home",
